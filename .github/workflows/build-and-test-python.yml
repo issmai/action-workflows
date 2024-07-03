@@ -39,7 +39,7 @@ jobs:
                 "type": "section",
                 "text": {
                   "type": "mrkdwn",
-                  "text": "${{ inputs.service_name }} build status for branch <${{github.ref_name}}> was: ${{needs.build-and-test.result }}"
+                  "text": "*${{ inputs.service_name }}* build status for branch <${{github.ref_name}}> was: *${{needs.build-and-test.result }}*"
                 },
                 "accessory": {
                   "type": "button",
