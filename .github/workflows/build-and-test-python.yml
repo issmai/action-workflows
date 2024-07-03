@@ -15,8 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Build the docker image
-        run: docker-compose build ${{ inputs.service_name }}
+      - name: Execute build
+        run: |
+          docker compose build journey-execution-service
 
   slack-notification:
     name: "Slack Notification"
@@ -53,4 +54,4 @@ jobs:
                 }
               }
             ]
-        }
+      }
