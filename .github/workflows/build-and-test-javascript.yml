@@ -1,0 +1,57 @@
+name: Javascript - Build and Test - Docker Compose
+on:
+  workflow_call:
+    inputs:
+      service_name:
+        required: true
+        type: string
+
+    secrets:
+      slack-webhook-url:
+        required: false
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Execute build
+        run: |
+          docker compose build ${{ inputs.service_name }}
+
+  slack-notification:
+    name: "Slack Notification"
+    needs: [ build-and-test ]
+    if: always()
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Slack workflow notification
+        uses: slackapi/slack-github-action@v1.25.0
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.slack-webhook-url }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+        with:
+          payload: |
+            {
+            "blocks": [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "*${{ inputs.service_name }}* build status for branch <${{github.ref_name}}> was: *${{needs.build-and-test.result }}*"
+                },
+                "accessory": {
+                  "type": "button",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "Open",
+                    "emoji": true
+                  },
+                  "value": "open-link",
+                  "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+                  "action_id": "button-action"
+                }
+              }
+              ]
+              }
