@@ -20,7 +20,7 @@ jobs:
         run: |
           docker save $(docker images --format "{{.Repository}}:{{.Tag}}" | grep "${{ inputs.service_name }}" | head -n 1) -o image.tar
       - name: Upload image artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4  # Updated to v4
         with:
           name: docker-image
           path: image.tar
@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download Docker image
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4  # Updated to v4
         with:
           name: docker-image
           path: .
@@ -44,7 +44,7 @@ jobs:
         with:
           image-ref: '${{ env.IMAGE_NAME }}'
           format: 'table'
-          exit-code: '0'  # Set to 1 to make the workflow fail on vulnerabilities
+          exit-code: '0'  # Set to 0 to prevent failing the build on vulnerabilities
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
@@ -68,7 +68,7 @@ jobs:
   teams-notification:
     name: "MS Teams Notification"
     needs: [build-and-test, security-scan]
-    if: always()
+    if: always() && secrets.teams-workflow-url != ''
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
