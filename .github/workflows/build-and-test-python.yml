@@ -68,7 +68,7 @@ jobs:
   teams-notification:
     name: "MS Teams Notification"
     needs: [build-and-test, security-scan]
-    if: always() && secrets.teams-workflow-url != ''
+    if: always()
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
