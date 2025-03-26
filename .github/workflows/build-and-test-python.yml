@@ -83,14 +83,47 @@ jobs:
           contentType: 'application/json'
           data: >-
             {
-              "serviceName": "${{ inputs.service_name }}",
-              "buildStatus": "${{ needs.build-and-test.result }}",
-              "scanStatus": "${{ needs.security-scan.result }}",
-              "overallStatus": "${{needs.build-and-test.result == 'success' && needs.security-scan.result == 'success' && 'success' || 'failure' }}",
-              "branch": "${{ github.ref_name }}",
-              "runUrl": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
-              "repository": "${{ github.repository }}",
-              "commit": "${{ github.sha }}",
-              "actor": "${{ github.actor }}",
-              "runId": "${{ github.run_id }}"
+            "type": "message",
+            "attachments": [
+                {
+                  "contentType": "application/vnd.microsoft.card.adaptive",
+                  "content": {
+                    "type": "AdaptiveCard",
+                    "body": [
+                      {
+                        "type": "TextBlock",
+                        "size": "Medium",
+                        "weight": "Bolder",
+                        "text": "${{ inputs.service_name }} Build Status"
+                      },
+                      {
+                        "type": "FactSet",
+                        "facts": [
+                          {
+                            "title": "Build Status",
+                            "value": "${{ needs.build-and-test.result }}"
+                          },
+                          {
+                            "title": "Security Scan",
+                            "value": "${{ needs.security-scan.result }}"
+                          },
+                          {
+                            "title": "Branch",
+                            "value": "${{ github.ref_name }}"
+                          }
+                        ]
+                      }
+                    ],
+                    "actions": [
+                      {
+                        "type": "Action.OpenUrl",
+                        "title": "View Run",
+                        "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                      }
+                    ],
+                    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                    "version": "1.2"
+                  }
+                }
+              ]
             }
