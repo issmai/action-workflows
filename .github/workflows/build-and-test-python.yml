@@ -57,7 +57,7 @@ jobs:
         with:
           image-ref: '${{ env.IMAGE_NAME }}'
           format: 'json'
-          output: 'trivy-results.json'
+          output: 'trivy-json-report.json'
           exit-code: '0'
           ignore-unfixed: false
           vuln-type: 'os,library'
@@ -68,8 +68,8 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: trivy-results
-          path: trivy-results.json
+          name: trivy-json-report
+          path: trivy-json-report.json
           retention-days: 5
       
       # Generate chart Vuln Chart
