@@ -74,8 +74,6 @@ jobs:
           path: trivy-results.json
           retention-days: 5
       
-       # HTML REPORT TEMPLATE 1 
-
       - name: Download Trivy HTML Template
         run: |
           mkdir -p .trivy
@@ -101,32 +99,6 @@ jobs:
           path: trivy-report.html
           retention-days: 5
         
-       # HTML REPORT TEMPLATE 2 
-
-      - name: Download Trivy HTML Template New
-        run: |
-          mkdir -p .trivy
-          wget -qO .trivy/html.tpl https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/junit.tpl
-
-      - name: Generate Trivy HTML report New
-        if: always()
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: '${{ env.IMAGE_NAME }}'
-          format: 'template'
-          exit-code: '0'
-          ignore-unfixed: false
-          template: '@.trivy/html.tpl'
-          output: 'trivy-report-new.html'
-          severity: 'CRITICAL,HIGH,MEDIUM'
-          scanners: vuln
-
-      - name: Upload Trivy HTML Report New
-        uses: actions/upload-artifact@v4
-        with:
-          name: trivy-html-report-new
-          path: trivy-report-new.html
-          retention-days: 5
 
   teams-notification:
     name: "MS Teams Notification"
