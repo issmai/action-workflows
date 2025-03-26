@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download Docker image
-        uses: actions/download-artifact@v4  # Updated to v4
+        uses: actions/download-artifact@v4
         with:
           name: docker-image
           path: .
@@ -44,26 +44,29 @@ jobs:
         with:
           image-ref: '${{ env.IMAGE_NAME }}'
           format: 'table'
-          exit-code: '0'  # Set to 0 to prevent failing the build on vulnerabilities
+          exit-code: '0'
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
+      # Save Trivy results as artifacts instead of uploading to GitHub Security
       - name: Generate Trivy report
         if: always()
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: '${{ env.IMAGE_NAME }}'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
+          format: 'json'
+          output: 'trivy-results.json'
           exit-code: '0'
           ignore-unfixed: false
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH,MEDIUM'
-      - name: Upload Trivy scan results to GitHub Security tab
+      - name: Upload Trivy scan results
         if: always()
-        uses: github/codeql-action/upload-sarif@v2
+        uses: actions/upload-artifact@v4
         with:
-          sarif_file: 'trivy-results.sarif'
+          name: trivy-results
+          path: trivy-results.json
+          retention-days: 5
 
   teams-notification:
     name: "MS Teams Notification"
