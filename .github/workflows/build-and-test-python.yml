@@ -16,15 +16,15 @@ jobs:
       - name: Execute build
         run: |
           docker compose build ${{ inputs.service_name }}
-      - name: Save Docker image
-        run: |
-          docker save $(docker images --format "{{.Repository}}:{{.Tag}}" | grep "${{ inputs.service_name }}" | head -n 1) -o image.tar
-      - name: Upload image artifact
-        uses: actions/upload-artifact@v4  # Updated to v4
-        with:
-          name: docker-image
-          path: image.tar
-          retention-days: 1
+      #- name: Save Docker image
+      #  run: |
+      #    docker save $(docker images --format "{{.Repository}}:{{.Tag}}" | grep "${{ inputs.service_name }}" | head -n 1) -o image.tar
+      #- name: Upload image artifact
+      #  uses: actions/upload-artifact@v4  # Updated to v4
+      #  with:
+      #    name: docker-image
+      #    path: image.tar
+      #    retention-days: 1
 
   security-scan:
     needs: build-and-test
@@ -58,12 +58,12 @@ jobs:
           severity: 'CRITICAL,HIGH,MEDIUM'
           scanners: vuln
 
-      - name: Upload Trivy HTML Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: trivy-html-report-${{ inputs.service_name }} 
-          path: trivy-report-${{ inputs.service_name }}.html
-          retention-days: 5
+     # - name: Upload Trivy HTML Report
+     #   uses: actions/upload-artifact@v4
+     #   with:
+     #     name: trivy-html-report-${{ inputs.service_name }} 
+     #     path: trivy-report-${{ inputs.service_name }}.html
+     #     retention-days: 5
         
 
   teams-notification:
